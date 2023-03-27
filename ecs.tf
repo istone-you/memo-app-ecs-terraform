@@ -1,6 +1,6 @@
 resource "aws_ecs_service" "FrontendService" {
-  name                               = "test"
-  cluster                            = "arn:aws:ecs:ap-northeast-1:763397213391:cluster/test"
+  name                               = "frontend"
+  cluster                            = aws_ecs_cluster.ECSCluster.arn
   desired_count                      = 1
   launch_type                        = "EC2"
   task_definition                    = aws_ecs_task_definition.FrontendTaskDefinition.arn
@@ -18,8 +18,8 @@ resource "aws_ecs_service" "FrontendService" {
 }
 
 resource "aws_ecs_service" "BackendService" {
-  name                               = "test"
-  cluster                            = "arn:aws:ecs:ap-northeast-1:763397213391:cluster/test"
+  name                               = "backend"
+  cluster                            = aws_ecs_cluster.ECSCluster.arn
   desired_count                      = 1
   launch_type                        = "EC2"
   task_definition                    = aws_ecs_task_definition.BackendTaskDefinition.arn
@@ -37,5 +37,5 @@ resource "aws_ecs_service" "BackendService" {
 }
 
 resource "aws_ecs_cluster" "ECSCluster" {
-  name = "test"
+  name = "mern"
 }

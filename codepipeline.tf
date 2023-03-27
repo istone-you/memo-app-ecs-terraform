@@ -1,6 +1,6 @@
 
 resource "aws_codepipeline" "ecs-pipeline" {
-  name     = "tf-pipeline"
+  name     = "ecs-pipeline"
   role_arn = aws_iam_role.role_ecs-pipeline.arn
 
   artifact_store {
@@ -30,15 +30,16 @@ resource "aws_codepipeline" "ecs-pipeline" {
   }
 
   stage {
-    name = "FrontendBuild"
+    name = "Build"
 
     action {
-      name            = "Build"
-      category        = "Build"
-      owner           = "AWS"
-      provider        = "CodeBuild"
-      version         = "1"
-      input_artifacts = ["SourceArtifact"]
+      name             = "FrontendBuild"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      input_artifacts  = ["SourceArtifact"]
+      output_artifacts = ["FrontendBuildArtifact"]
       configuration = {
         ProjectName = aws_codebuild_project.project_frontend.name
       }
@@ -46,18 +47,14 @@ resource "aws_codepipeline" "ecs-pipeline" {
       namespace = "Frontend"
       run_order = 1
     }
-  }
-
-  stage {
-    name = "BackendBuild"
-
     action {
-      name            = "Build"
-      category        = "Build"
-      owner           = "AWS"
-      provider        = "CodeBuild"
-      version         = "1"
-      input_artifacts = ["SourceArtifact"]
+      name             = "BackendBuild"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      version          = "1"
+      input_artifacts  = ["SourceArtifact"]
+      output_artifacts = ["BackendBuildArtifact"]
       configuration = {
         ProjectName = aws_codebuild_project.project_frontend.name
       }
@@ -68,30 +65,26 @@ resource "aws_codepipeline" "ecs-pipeline" {
   }
 
   stage {
-    name = "Deploy"
+    name = "FrontendDeploy"
     action {
-      name            = "Deploy"
+      name            = "FrontendDeploy"
       category        = "Deploy"
       owner           = "AWS"
       provider        = "ECS"
       version         = 1
-      input_artifacts = ["build_output"]
+      input_artifacts = ["FrontendBuildArtifact"]
       configuration = {
         ClusterName = aws_ecs_cluster.ECSCluster.name
         ServiceName = aws_ecs_service.FrontendService.name
       }
     }
-  }
-
-  stage {
-    name = "Deploy"
     action {
-      name            = "Deploy"
+      name            = "BackendendDeploy"
       category        = "Deploy"
       owner           = "AWS"
       provider        = "ECS"
       version         = 1
-      input_artifacts = ["build_output"]
+      input_artifacts = ["BackendBuildArtifact"]
       configuration = {
         ClusterName = aws_ecs_cluster.ECSCluster.name
         ServiceName = aws_ecs_service.BackendService.name
