@@ -8,20 +8,19 @@ resource "aws_codebuild_project" "project_backend" {
     type      = "CODEPIPELINE"
     buildspec = <<-EOF
       version: 0.2
-      env:
-        exported-variables:
-          - BuildID
-          - BuildTag
       phases:
         pre_build:
           commands:
-            - "echo Executing backend"
+            - "echo Executing frontend"
+            - "cd client"
         build:
           commands:
-            - ""
+            - "docker build -t frontend ."
         post_build:
           commands:
-            - ""
+            - "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+            - "docker tag frontend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
+            - "docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
     EOF
   }
 
