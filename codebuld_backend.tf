@@ -11,16 +11,20 @@ resource "aws_codebuild_project" "project_backend" {
       phases:
         pre_build:
           commands:
-            - "echo Executing frontend"
+            - "echo Executing backend"
             - "cd client"
         build:
           commands:
-            - "docker build -t frontend ."
+            - "docker build -t backend ."
         post_build:
           commands:
             - "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-            - "docker tag frontend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
-            - "docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
+            - "docker tag backend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest"
+            - "docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest"
+            - echo Writing image definitions file...
+            - echo "[{\"name\":\"backend\",\"imageUri\":\"${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest\"}]" > ../imagedefinitions.json
+      artifacts:
+          files: imagedefinitions.json
     EOF
   }
 
