@@ -30,7 +30,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
   }
 
   stage {
-    name = "Frontend"
+    name = "FrontendBuild"
 
     action {
       name            = "Build"
@@ -49,7 +49,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
   }
 
   stage {
-    name = "Backend"
+    name = "BackendBuild"
 
     action {
       name            = "Build"
@@ -64,6 +64,38 @@ resource "aws_codepipeline" "ecs-pipeline" {
       region    = var.aws_region
       namespace = "Backend"
       run_order = 1
+    }
+  }
+
+  stage {
+    name = "Deploy"
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      version         = 1
+      input_artifacts = ["build_output"]
+      configuration = {
+        ClusterName = aws_ecs_cluster.ECSCluster.name
+        ServiceName = aws_ecs_service.FrontendService.name
+      }
+    }
+  }
+
+  stage {
+    name = "Deploy"
+    action {
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      version         = 1
+      input_artifacts = ["build_output"]
+      configuration = {
+        ClusterName = aws_ecs_cluster.ECSCluster.name
+        ServiceName = aws_ecs_service.BackendService.name
+      }
     }
   }
 }
