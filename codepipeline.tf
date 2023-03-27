@@ -20,7 +20,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
       output_artifacts = ["SourceArtifact"]
       configuration = {
         ConnectionArn    = aws_codestarconnections_connection.ecs-pipeline.arn
-        BranchName       = "master"
+        BranchName       = "main"
         FullRepositoryId = var.github_repo
       }
       region    = var.aws_region
@@ -56,7 +56,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
       input_artifacts  = ["SourceArtifact"]
       output_artifacts = ["BackendBuildArtifact"]
       configuration = {
-        ProjectName = aws_codebuild_project.project_frontend.name
+        ProjectName = aws_codebuild_project.project_backend.name
       }
       region    = var.aws_region
       namespace = "Backend"
@@ -65,7 +65,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
   }
 
   stage {
-    name = "FrontendDeploy"
+    name = "Deploy"
     action {
       name            = "FrontendDeploy"
       category        = "Deploy"
