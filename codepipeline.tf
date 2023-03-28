@@ -70,12 +70,12 @@ resource "aws_codepipeline" "ecs-pipeline" {
       name            = "FrontendDeploy"
       category        = "Deploy"
       owner           = "AWS"
-      provider        = "ECS"
+      provider        = "S3"
       version         = 1
       input_artifacts = ["FrontendBuildArtifact"]
       configuration = {
-        ClusterName = aws_ecs_cluster.ECSCluster.name
-        ServiceName = aws_ecs_service.FrontendService.name
+        BucketName = aws_s3_bucket.frontend.bucket
+        Extract    = true
       }
     }
     action {
@@ -86,7 +86,7 @@ resource "aws_codepipeline" "ecs-pipeline" {
       version         = 1
       input_artifacts = ["BackendBuildArtifact"]
       configuration = {
-        ClusterName = aws_ecs_cluster.ECSCluster.name
+        ClusterName = aws_ecs_cluster.mern.name
         ServiceName = aws_ecs_service.BackendService.name
       }
     }

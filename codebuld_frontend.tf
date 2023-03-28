@@ -13,18 +13,15 @@ resource "aws_codebuild_project" "project_frontend" {
           commands:
             - "echo Executing frontend"
             - "cd client"
+            - "npm install"
         build:
           commands:
-            - "docker build -t frontend ."
+            - "npm run build"
         post_build:
           commands:
-            - "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-            - "docker tag frontend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
-            - "docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest"
-            - echo Writing image definitions file...
-            - echo "[{\"name\":\"frontend\",\"imageUri\":\"${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/frontend:latest\"}]" > ../imagedefinitions.json
+            - "echo Build completed."
       artifacts:
-          files: imagedefinitions.json
+          files: client/**/*
     EOF
   }
 

@@ -1,24 +1,4 @@
 
-resource "aws_autoscaling_group" "frontend" {
-  name             = "ecs-frontend-asg"
-  min_size         = 1
-  max_size         = 1
-  desired_capacity = 1
-
-  launch_configuration = aws_launch_configuration.ecs.name
-  vpc_zone_identifier  = ["subnet-09d45d5b0722e6315"]
-
-  service_linked_role_arn = "arn:aws:iam::763397213391:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
-
-  tags = [
-    {
-      key                 = "AmazonECSManaged"
-      propagate_at_launch = true
-      value               = ""
-    }
-  ]
-}
-
 resource "aws_autoscaling_group" "backend" {
   name             = "ecs-backend-asg"
   min_size         = 1
@@ -30,13 +10,11 @@ resource "aws_autoscaling_group" "backend" {
 
   service_linked_role_arn = "arn:aws:iam::763397213391:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
 
-  tags = [
-    {
-      key                 = "AmazonECSManaged"
-      propagate_at_launch = true
-      value               = ""
-    }
-  ]
+  tag {
+    key                 = "AmazonECSManaged"
+    propagate_at_launch = true
+    value               = ""
+  }
 }
 
 resource "aws_launch_configuration" "ecs" {
