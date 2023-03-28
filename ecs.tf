@@ -4,7 +4,7 @@ resource "aws_ecs_service" "BackendService" {
   desired_count                      = 1
   task_definition                    = aws_ecs_task_definition.BackendTaskDefinition.arn
   deployment_maximum_percent         = 200
-  deployment_minimum_healthy_percent = 100
+  deployment_minimum_healthy_percent = 0
   ordered_placement_strategy {
     type  = "spread"
     field = "attribute:ecs.availability-zone"
