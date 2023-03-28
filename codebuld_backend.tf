@@ -1,3 +1,8 @@
+variable "MONGODB_URL" {}
+variable "CLIENT_URL" {}
+variable "SECRET_KEY" {}
+variable "TOKEN_SECRET_KEY" {}
+
 resource "aws_codebuild_project" "project_backend" {
   name          = "backend-project"
   description   = "Analyze the code for vulnerabilities using backend."
@@ -11,16 +16,17 @@ resource "aws_codebuild_project" "project_backend" {
       phases:
         pre_build:
           commands:
-            - "echo Executing backend"
-            - "cd client"
+            - echo Executing backend
+            - cd client
+            - echo -e  'MONGODB_URL = "${var.MONGODB_URL}"\nCLIENT_URL = "${var.CLIENT_URL}"\nSECRET_KEY = "${var.SECRET_KEY}"\nTOKEN_SECRET_KEY = "${var.TOKEN_SECRET_KEY}"' > .env
         build:
           commands:
-            - "docker build -t backend ."
+            - docker build -t backend .
         post_build:
           commands:
-            - "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-            - "docker tag backend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest"
-            - "docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest"
+            - aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com
+            - docker tag backend:latest ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest
+            - docker push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest
             - echo Writing image definitions file...
             - echo "[{\"name\":\"backend\",\"imageUri\":\"${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/backend:latest\"}]" > ../imagedefinitions.json
       artifacts:

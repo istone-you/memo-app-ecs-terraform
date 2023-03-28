@@ -45,6 +45,7 @@ resource "aws_iam_policy" "policy_frontend" {
         Effect = "Allow"
         Action = [
           "s3:PutObject",
+          "s3:ListBucket",
           "s3:GetObject",
           "s3:GetObjectVersion",
           "s3:GetBucketAcl",
@@ -52,7 +53,9 @@ resource "aws_iam_policy" "policy_frontend" {
         ]
         Resource = [
           aws_s3_bucket.bucket_artifacts.arn,
-          "${aws_s3_bucket.bucket_artifacts.arn}/*"
+          "${aws_s3_bucket.bucket_artifacts.arn}/*",
+          aws_s3_bucket.frontend.arn,
+          "${aws_s3_bucket.frontend.arn}/*"
         ]
       },
       {
@@ -81,6 +84,14 @@ resource "aws_iam_policy" "policy_frontend" {
           "ecr:PutImage"
         ],
         "Resource" : "*"
+      },
+      {
+        "Sid" : "CloudFront",
+        "Effect" : "Allow",
+        "Action" : [
+          "cloudfront:CreateInvalidation"
+        ],
+        "Resource" : "${aws_cloudfront_distribution.mern.arn}"
       }
     ]
   })

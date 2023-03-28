@@ -1,13 +1,13 @@
 resource "aws_cloudfront_distribution" "mern" {
   origin {
-    domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
-    origin_id   = aws_s3_bucket.frontend.id
+    domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
+    origin_id                = aws_s3_bucket.frontend.id
     origin_access_control_id = aws_cloudfront_origin_access_control.mern.id
   }
 
   enabled = true
 
-  default_root_object = "client/public/index.html"
+  default_root_object = "index.html"
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]

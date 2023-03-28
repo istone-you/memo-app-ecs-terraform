@@ -11,17 +11,16 @@ resource "aws_codebuild_project" "project_frontend" {
       phases:
         pre_build:
           commands:
-            - "echo Executing frontend"
-            - "cd client"
-            - "npm install"
+            - echo Executing frontend
+            - cd client
+            - npm install
         build:
           commands:
-            - "npm run build"
+            - npm run build
         post_build:
           commands:
-            - "echo Build completed."
-      artifacts:
-          files: client/**/*
+            - aws s3 sync build/ s3://${aws_s3_bucket.frontend.id} --delete
+            - aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.mern.id} --paths "/*"
     EOF
   }
 

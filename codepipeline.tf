@@ -33,13 +33,12 @@ resource "aws_codepipeline" "ecs-pipeline" {
     name = "Build"
 
     action {
-      name             = "FrontendBuild"
-      category         = "Build"
-      owner            = "AWS"
-      provider         = "CodeBuild"
-      version          = "1"
-      input_artifacts  = ["SourceArtifact"]
-      output_artifacts = ["FrontendBuildArtifact"]
+      name            = "FrontendBuild"
+      category        = "Build"
+      owner           = "AWS"
+      provider        = "CodeBuild"
+      version         = "1"
+      input_artifacts = ["SourceArtifact"]
       configuration = {
         ProjectName = aws_codebuild_project.project_frontend.name
       }
@@ -66,18 +65,6 @@ resource "aws_codepipeline" "ecs-pipeline" {
 
   stage {
     name = "Deploy"
-    action {
-      name            = "FrontendDeploy"
-      category        = "Deploy"
-      owner           = "AWS"
-      provider        = "S3"
-      version         = 1
-      input_artifacts = ["FrontendBuildArtifact"]
-      configuration = {
-        BucketName = aws_s3_bucket.frontend.bucket
-        Extract    = true
-      }
-    }
     action {
       name            = "BackendendDeploy"
       category        = "Deploy"
