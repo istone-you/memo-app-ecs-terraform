@@ -17,7 +17,7 @@ resource "aws_codebuild_project" "project_backend" {
         pre_build:
           commands:
             - echo Executing backend
-            - cd client
+            - cd server
             - echo -e  'MONGODB_URL = "${var.MONGODB_URL}"\nCLIENT_URL = "${var.CLIENT_URL}"\nSECRET_KEY = "${var.SECRET_KEY}"\nTOKEN_SECRET_KEY = "${var.TOKEN_SECRET_KEY}"' > .env
         build:
           commands:

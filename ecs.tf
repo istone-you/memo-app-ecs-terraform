@@ -22,7 +22,7 @@ resource "aws_ecs_service" "BackendService" {
   service_registries {
     registry_arn   = aws_service_discovery_service.backend.arn
     container_name = "backend"
-    container_port = "3000"
+    container_port = "5000"
   }
 }
 
