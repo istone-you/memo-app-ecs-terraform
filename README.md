@@ -1,4 +1,4 @@
-# memo-app-ecs-terraform(作成中)
+# Terraformで作成する構成
 <img width="600" alt="ECSApp.drawio.png" src="ECSApp.drawio.png">
 
 ※構成図は暫定です。
